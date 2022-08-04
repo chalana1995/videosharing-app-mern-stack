@@ -12,10 +12,22 @@ const app = express();
 dotenv.config()
 const port = process.env.PORT || 5000
 
+
+app.use(express.json())
 app.use('/api/auth', authRouter)
 app.use('/api/users', userRouter)
 app.use('/api/comments', commentRouter)
 app.use('/api/videos', videoRouter)
+
+app.use((err, req, res, next) => {
+    const status = err.status || 500;
+    const message = err.message || "Somthing went wrong";
+    return res.status(status).json({
+        success: false,
+        status,
+        message
+    })
+})
 
 
 const connect = () => {
