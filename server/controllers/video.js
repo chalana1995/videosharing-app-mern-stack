@@ -1,3 +1,4 @@
+import { query } from "express";
 import { createError } from "../error.js";
 import User from "../models/User.js";
 import Video from "../models/Video.js"
@@ -108,6 +109,33 @@ export const sub = async (req, res, next) => {
         )
 
         res.status(200).json(list.flat().sort((a, b) => b.createdAt - a.createdAt))
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const tags = async (req, res, next) => {
+
+    const tags = req.query.tags
+
+    try {
+
+        const videoes = await Video.find({ tags: { $in: tags } }).limit(20)
+
+        res.status(200).json(videoes)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const search = async (req, res, next) => {
+    const query = req.query.q
+
+    try {
+
+        const videoes = await Video.find({ title: { $regex: query, $option: "i" } }).limit(40)
+
+        res.status(200).json(videoes)
     } catch (error) {
         next(error)
     }
